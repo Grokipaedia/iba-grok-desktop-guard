@@ -1,0 +1,142 @@
+# grok-desktop.iba.yaml
+# IBA Intent Bound Authorization — Grok Desktop Configuration
+# Patent GB2603013.0 (Pending) · UK IPO · Filed February 5, 2026
+# WIPO DAS Confirmed April 15, 2026 · Access Code C9A6
+# IETF draft-williams-intent-token-00 · intentbound.com
+#
+# Governs both Grok Build and Grok Computer in the unified desktop app.
+# An agent with computer control + build + deploy is the highest-risk
+# desktop agent in existence. The cert is the only authorization.
+#
+# Usage: python guard.py --config grok-desktop.iba.yaml --demo
+
+intent:
+  description: >
+    Authorized development and computer assistance on declared projects.
+    Grok Build: create, refactor, test within declared project scope.
+    Grok Computer: mouse, keyboard, screen within declared apps only.
+    No production deploys without explicit re-cert.
+    No credential access. No persistent background processes.
+    No system setting changes. No keylogging. No browser history access.
+
+principal:
+  identity_reference: "USER-DESKTOP-XXXX"
+  human_authorization: "HUMAN-AUTH-2026-04-20"
+  platform: "macOS"  # or Windows
+  session_type: "interactive"
+
+# ── GROK BUILD ────────────────────────────────────────────────────────
+build_scope:
+  - build_project
+  - create_file
+  - edit_file
+  - refactor_code
+  - write_tests
+  - run_tests
+  - npm_install_declared
+  - pip_install_declared
+  - git_commit
+  - git_push_declared_branch
+  - read_file
+  - search_codebase
+  - debug_session
+  - lint_format
+
+# ── GROK COMPUTER ─────────────────────────────────────────────────────
+computer_scope:
+  - mouse_click_declared_app
+  - keyboard_input_text
+  - screenshot_active_window
+  - open_declared_application
+  - scroll_declared_window
+  - copy_paste_declared_content
+  - file_open_declared_path
+  - browser_navigate_declared_url
+
+# Combined scope for gate check
+scope:
+  - build_project
+  - create_file
+  - edit_file
+  - refactor_code
+  - write_tests
+  - run_tests
+  - npm_install_declared
+  - pip_install_declared
+  - git_commit
+  - git_push
+  - read_file
+  - search_codebase
+  - debug_session
+  - lint_format
+  - mouse_click
+  - keyboard_input
+  - keyboard_type
+  - screenshot
+  - open_declared_application
+  - scroll
+  - copy_paste
+  - file_open
+  - browser_navigate
+
+denied:
+  # Build — forbidden
+  - production_deploy_no_cert
+  - delete_database
+  - drop_table
+  - credential_access
+  - env_file_read
+  - payment_execution
+  - modify_iam_policy
+  - disable_logging
+  - modify_audit_trail
+  - install_undeclared_package
+  - external_data_exfiltration
+  # Computer — forbidden
+  - read_browser_history
+  - access_password_manager
+  - read_keychain
+  - screen_record_background
+  - access_camera
+  - access_microphone_background
+  - system_setting_modify
+  - modify_hosts_file
+  - install_system_extension
+  - access_other_user_files
+
+default_posture: DENY_ALL
+
+# Kill threshold — session terminates immediately on match
+kill_threshold: >
+  keylog_capture |
+  persistent_background_process |
+  credential_exfiltration |
+  disable_security |
+  modify_audit_trail |
+  ransomware |
+  data_exfiltration_bulk |
+  system_level_persistence |
+  access_other_user |
+  capability_override
+
+neural_limits:
+  max_session_hours: 8
+  drift_detection: true
+  version_lock: true
+
+temporal_scope:
+  hard_expiry: "2026-12-31"
+
+audit:
+  chain: witnessbound
+  log_every_action: true
+  immutable: true
+  log_path: "grok-desktop-audit.jsonl"
+
+# Every capability expansion requires a new signed cert.
+# Silent expansion is FORBIDDEN.
+capability_governance:
+  production_deploy_requires: "explicit_human_re_cert"
+  credential_access_requires: "explicit_human_re_cert"
+  silent_expansion: FORBIDDEN
+  version_lock: true
